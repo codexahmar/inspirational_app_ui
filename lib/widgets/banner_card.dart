@@ -1,16 +1,48 @@
 import 'package:flutter/material.dart';
 
-class BannerCard extends StatelessWidget {
-  final Animation<double> scale;
+class BannerCard extends StatefulWidget {
+  const BannerCard({super.key});
 
-  const BannerCard({super.key, required this.scale});
+  @override
+  State<BannerCard> createState() => _BannerCardState();
+}
+
+class _BannerCardState extends State<BannerCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    );
+
+    _scale = Tween<double>(begin: 0.8, end: 1).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOutBack,
+      ),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return ScaleTransition(
-      scale: scale,
+      scale: _scale,
       child: Padding(
         padding: const EdgeInsets.all(18.0),
         child: Container(

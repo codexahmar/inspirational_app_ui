@@ -1,28 +1,65 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class AnimatedAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final Animation<Offset> slide;
-  final Animation<double> fade;
+class AnimatedAppBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback onThemeToggle;
   final ThemeMode themeMode;
 
   const AnimatedAppBar({
     super.key,
-    required this.slide,
-    required this.fade,
     required this.onThemeToggle,
     required this.themeMode,
   });
+
+  @override
+  State<AnimatedAppBar> createState() => _AnimatedAppBarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(70);
+}
+
+class _AnimatedAppBarState extends State<AnimatedAppBar>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slide;
+  late Animation<double> _fade;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    );
+
+    _slide = Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero)
+        .animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+
+    _fade = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    ));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return SlideTransition(
-      position: slide,
+      position: _slide,
       child: FadeTransition(
-        opacity: fade,
+        opacity: _fade,
         child: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
@@ -47,8 +84,8 @@ class AnimatedAppBar extends StatelessWidget implements PreferredSizeWidget {
                     onTap: () {},
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Icon(Icons.menu,
-                          color: theme.colorScheme.onSurface),
+                      child:
+                          Icon(Icons.menu, color: theme.colorScheme.onSurface),
                     ),
                   ),
                 ),
@@ -61,11 +98,11 @@ class AnimatedAppBar extends StatelessWidget implements PreferredSizeWidget {
                     borderRadius: BorderRadius.circular(12),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
-                      onTap: onThemeToggle,
+                      onTap: widget.onThemeToggle,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Icon(
-                          themeMode == ThemeMode.dark
+                          widget.themeMode == ThemeMode.dark
                               ? Icons.dark_mode
                               : Icons.light_mode,
                           color: theme.colorScheme.onSurface,
@@ -81,7 +118,4 @@ class AnimatedAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(70);
 }

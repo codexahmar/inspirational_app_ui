@@ -1,23 +1,54 @@
 import 'package:flutter/material.dart';
 
-class BottomNavBar extends StatelessWidget {
+class BottomNavBar extends StatefulWidget {
   final int selectedIndex;
   final ValueChanged<int> onTap;
-  final Animation<Offset> slide;
 
   const BottomNavBar({
     super.key,
     required this.selectedIndex,
     required this.onTap,
-    required this.slide,
   });
+
+  @override
+  State<BottomNavBar> createState() => _BottomNavBarState();
+}
+
+class _BottomNavBarState extends State<BottomNavBar>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    );
+
+    _slide = Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+        .animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return SlideTransition(
-      position: slide,
+      position: _slide,
       child: Container(
         decoration: BoxDecoration(
           color: theme.colorScheme.surface.withOpacity(0.95),
@@ -31,8 +62,8 @@ class BottomNavBar extends StatelessWidget {
           ],
         ),
         child: BottomNavigationBar(
-          currentIndex: selectedIndex,
-          onTap: onTap,
+          currentIndex: widget.selectedIndex,
+          onTap: widget.onTap,
           backgroundColor: Colors.transparent,
           elevation: 0,
           type: BottomNavigationBarType.fixed,

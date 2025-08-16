@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inspirational_app_ui/screens/home-page.dart';
+import 'package:inspirational_app_ui/screens/home_page.dart';
 import 'package:inspirational_app_ui/themes/app_themes.dart';
 
 void main() {
