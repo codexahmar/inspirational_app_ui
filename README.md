@@ -17,10 +17,10 @@
 
 ---
 
-## Recording
+## Screenshot
 
 ### Home Page
-![Home Page](Recording/video.mov)
+![Home Page](Screenshot/home_page.png)
 
 ---
 
